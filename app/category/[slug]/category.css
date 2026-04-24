@@ -1,0 +1,5 @@
+.category-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f1e 0%, #16213e 100%);
+  color: #fff;
+}
