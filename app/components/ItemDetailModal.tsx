@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MdClose, MdAddShoppingCart, MdShoppingBag, MdStar } from 'react-icons/md';
+import { MdClose, MdAddShoppingCart, MdShoppingBag, MdStar, MdRemoveShoppingCart } from 'react-icons/md';
+import { useCart } from '@/context/CartContext';
 import './ItemDetailModal.css';
 
 export interface ModalItem {
@@ -25,6 +26,7 @@ interface ItemDetailModalProps {
   onClose: () => void;
   similarItems?: ModalItem[];
   onAddToCart?: (item: ModalItem) => void;
+  onRemoveFromCart?: (itemId: string | number) => void;
   onOrder?: (item: ModalItem) => void;
 }
 
@@ -34,9 +36,11 @@ export default function ItemDetailModal({
   onClose,
   similarItems = [],
   onAddToCart,
+  onRemoveFromCart,
   onOrder,
 }: ItemDetailModalProps) {
   const [isAnimating, setIsAnimating] = useState(false);
+  const { cartItems } = useCart();
 
   useEffect(() => {
     if (isOpen) {
@@ -75,12 +79,18 @@ export default function ItemDetailModal({
     }
   };
 
+  const isInCart = item ? cartItems.some(cartItem => cartItem.id === item.id) : false;
+
   const handleAddToCart = () => {
-    onAddToCart?.(item);
+    if (isInCart) {
+      onRemoveFromCart?.(item!.id);
+    } else {
+      onAddToCart?.(item!);
+    }
   };
 
   const handleOrder = () => {
-    onOrder?.(item);
+    onOrder?.(item!);
   };
 
   return (
@@ -168,11 +178,20 @@ export default function ItemDetailModal({
             {/* Action Buttons */}
             <div className="modal-actions">
               <button
-                className="modal-btn modal-btn-cart"
+                className={`modal-btn modal-btn-cart ${isInCart ? 'remove' : 'add'}`}
                 onClick={handleAddToCart}
               >
-                <MdAddShoppingCart size={18} />
-                <span>Add to Cart</span>
+                {isInCart ? (
+                  <>
+                    <MdRemoveShoppingCart size={18} />
+                    <span>Remove from Cart</span>
+                  </>
+                ) : (
+                  <>
+                    <MdAddShoppingCart size={18} />
+                    <span>Add to Cart</span>
+                  </>
+                )}
               </button>
               <button
                 className="modal-btn modal-btn-order"

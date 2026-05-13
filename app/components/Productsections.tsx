@@ -6,6 +6,7 @@ import {
   MdOutdoorGrill, MdHouse, MdDirectionsCar,
   MdKitchen, MdElectricBolt, MdCheckroom, MdAddShoppingCart
 } from 'react-icons/md'
+import { toast } from 'react-toastify'
 import { useCart } from '@/context/CartContext'
 import './Productsections.css'
 import ItemDetailModal, { ModalItem } from './ItemDetailModal'
@@ -232,14 +233,25 @@ function Stars({ rating }: { rating: number }) {
    Single Product Card
 ───────────────────────────────────────────── */
 function ProductCard({ item, catStyle, onItemClick }: { item: any; catStyle: any; onItemClick: (item: any) => void }) {
-  const [isAdded, setIsAdded] = useState(false);
-  const { addToCart } = useCart();
+  const { addToCart, removeFromCart, cartItems } = useCart();
+
+  const isInCart = cartItems.some(cartItem => cartItem.id === item.id);
 
   const handleCartClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    addToCart(item);
-    setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 1500);
+    if (isInCart) {
+      removeFromCart(item.id);
+    } else {
+      addToCart(item);
+      toast.success('Added to cart', {
+        position: 'bottom-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
   };
 
   return (
@@ -261,8 +273,8 @@ function ProductCard({ item, catStyle, onItemClick }: { item: any; catStyle: any
         <div className="ps-card-footer">
           <span className="ps-card-price">{item.price}</span>
           <button 
-            className={`ps-card-btn ${isAdded ? 'added' : ''}`}
-            title="Add to cart"
+            className={`ps-card-btn ${isInCart ? 'added' : ''}`}
+            title={isInCart ? "Remove from cart" : "Add to cart"}
             onClick={handleCartClick}
           >
             <MdAddShoppingCart size={14} />
@@ -368,7 +380,7 @@ function CategorySection({ section, onItemClick }: { section: any; onItemClick: 
 export default function ProductSections() {
   const [selectedItem, setSelectedItem] = useState<ModalItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { addToCart } = useCart();
+  const { addToCart, removeFromCart } = useCart();
 
   const handleItemClick = (item: any) => {
     setSelectedItem(item);
@@ -382,7 +394,10 @@ export default function ProductSections() {
 
   const handleAddToCart = (item: ModalItem) => {
     addToCart(item);
-    handleCloseModal();
+  };
+
+  const handleRemoveFromCart = (itemId: string | number) => {
+    removeFromCart(itemId);
   };
 
   const handleOrder = (item: ModalItem) => {
@@ -390,9 +405,18 @@ export default function ProductSections() {
     // TODO: Implement order functionality
   };
 
+  // Add unique IDs to items based on section index
+  const sectionsWithUniqueIds = SECTIONS.map((section, sectionIndex) => ({
+    ...section,
+    items: section.items.map((item: any) => ({
+      ...item,
+      id: sectionIndex * 1000 + item.id,
+    })),
+  }));
+
   // Get similar items based on category
   const getSimilarItems = (item: ModalItem): ModalItem[] => {
-    const currentSection = SECTIONS.find(s => s.category === item.category);
+    const currentSection = sectionsWithUniqueIds.find(s => s.category === item.category);
     if (!currentSection) return [];
     return currentSection.items
       .filter((i: any) => i.id !== item.id)
@@ -402,7 +426,7 @@ export default function ProductSections() {
   return (
     <>
       <div className="product-sections">
-        {SECTIONS.map(section => (
+        {sectionsWithUniqueIds.map(section => (
           <CategorySection key={section.category} section={section} onItemClick={handleItemClick} />
         ))}
       </div>
@@ -412,6 +436,7 @@ export default function ProductSections() {
         onClose={handleCloseModal}
         similarItems={selectedItem ? getSimilarItems(selectedItem) : []}
         onAddToCart={handleAddToCart}
+        onRemoveFromCart={handleRemoveFromCart}
         onOrder={handleOrder}
       />
     </>

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 // import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { CartProvider } from "@/context/CartContext";
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "OminiCart | Your All-in-One Marketplace",
@@ -18,11 +18,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="app">
-        <CartProvider>
+        <Providers>
           {/* <Header /> */}
           <main>{children}</main>
           <Footer />
-        </CartProvider>
+        </Providers>
       </body>
     </html>
   );

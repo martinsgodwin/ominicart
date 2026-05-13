@@ -391,6 +391,22 @@
   transform: translateY(0);
 }
 
+.modal-btn-cart.remove {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+}
+
+.modal-btn-cart.remove:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+}
+
+.modal-btn-cart.remove:active {
+  transform: translateY(0);
+}
+
 .modal-btn-order {
   background: linear-gradient(135deg, #10b981, #059669);
   color: white;

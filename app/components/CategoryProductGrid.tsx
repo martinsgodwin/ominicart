@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Product } from '@/lib/products'
 import { MdAddShoppingCart } from 'react-icons/md'
+import { toast } from 'react-toastify'
 import { useCart } from '@/context/CartContext'
 import './CategoryProductGrid.css'
 import ItemDetailModal, { ModalItem } from './ItemDetailModal'
@@ -26,23 +27,34 @@ function Stars({ rating }: { rating: number }) {
 
 // Product Card Component
 function ProductCard({ product, onItemClick }: { product: Product; onItemClick: (product: Product) => void }) {
-  const [isAdded, setIsAdded] = useState(false);
-  const { addToCart } = useCart();
+  const { addToCart, removeFromCart, cartItems } = useCart();
+
+  const isInCart = cartItems.some(cartItem => cartItem.id === product.id);
 
   const handleCartClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      image: product.image,
-      category: product.category,
-      rating: product.rating,
-      reviews: product.reviews,
-    });
-    setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 1500);
+    if (isInCart) {
+      removeFromCart(product.id);
+    } else {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        originalPrice: product.originalPrice,
+        image: product.image,
+        category: product.category,
+        rating: product.rating,
+        reviews: product.reviews,
+      });
+      toast.success('Added to cart', {
+        position: 'bottom-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
   };
 
   return (
@@ -71,8 +83,8 @@ function ProductCard({ product, onItemClick }: { product: Product; onItemClick: 
         <div className="ps-card-footer">
           <span className="ps-card-price">{product.price.toLocaleString()}</span>
           <button 
-            className={`ps-card-btn ${isAdded ? 'added' : ''}`}
-            title="Add to cart"
+            className={`ps-card-btn ${isInCart ? 'added' : ''}`}
+            title={isInCart ? "Remove from cart" : "Add to cart"}
             onClick={handleCartClick}
           >
             <MdAddShoppingCart size={14} />
@@ -86,7 +98,7 @@ function ProductCard({ product, onItemClick }: { product: Product; onItemClick: 
 export default function CategoryProductGrid({ products, categoryName }: CategoryProductGridProps) {
   const [selectedItem, setSelectedItem] = useState<ModalItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { addToCart } = useCart();
+  const { addToCart, removeFromCart } = useCart();
 
   const handleItemClick = (product: Product) => {
     const modalItem: ModalItem = {
@@ -111,7 +123,10 @@ export default function CategoryProductGrid({ products, categoryName }: Category
 
   const handleAddToCart = (item: ModalItem) => {
     addToCart(item);
-    handleCloseModal();
+  };
+
+  const handleRemoveFromCart = (itemId: string | number) => {
+    removeFromCart(itemId);
   };
 
   const handleOrder = (item: ModalItem) => {
@@ -139,34 +154,35 @@ export default function CategoryProductGrid({ products, categoryName }: Category
 
   return (
     <>
-    <section className="category-products">
-      {/* Header */}
-      <div className="ps-header">
-        <div className="ps-title-group">
-          <h2 className="ps-title">
-            {categoryName}
-            <span className="ps-count">{products.length}+ items</span>
-          </h2>
+      <section className="category-products">
+        {/* Header */}
+        <div className="ps-header">
+          <div className="ps-title-group">
+            <h2 className="ps-title">
+              {categoryName}
+              <span className="ps-count">{products.length}+ items</span>
+            </h2>
+          </div>
         </div>
-      </div>
 
-      {/* Products Grid */}
-      <div className="ps-grid-wrapper">
-        <div className="ps-grid">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} onItemClick={handleItemClick} />
-          ))}
+        {/* Products Grid */}
+        <div className="ps-grid-wrapper">
+          <div className="ps-grid">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} onItemClick={handleItemClick} />
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
-    <ItemDetailModal
-      isOpen={isModalOpen}
-      item={selectedItem}
-      onClose={handleCloseModal}
-      similarItems={selectedItem ? getSimilarItems(selectedItem) : []}
-      onAddToCart={handleAddToCart}
-      onOrder={handleOrder}
-    />
+      </section>
+      <ItemDetailModal
+        isOpen={isModalOpen}
+        item={selectedItem}
+        onClose={handleCloseModal}
+        similarItems={selectedItem ? getSimilarItems(selectedItem) : []}
+        onAddToCart={handleAddToCart}
+        onRemoveFromCart={handleRemoveFromCart}
+        onOrder={handleOrder}
+      />
     </>
   )
 }
