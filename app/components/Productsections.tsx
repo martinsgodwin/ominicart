@@ -1,12 +1,14 @@
 'use client';
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { GiMeat, GiPlantRoots } from 'react-icons/gi'
 import {
   MdOutdoorGrill, MdHouse, MdDirectionsCar,
   MdKitchen, MdElectricBolt, MdCheckroom, MdAddShoppingCart
 } from 'react-icons/md'
+import { useCart } from '@/context/CartContext'
 import './Productsections.css'
+import ItemDetailModal, { ModalItem } from './ItemDetailModal'
 
 /* ─────────────────────────────────────────────
    Category meta (colours/icons match CategoryStrip)
@@ -229,9 +231,19 @@ function Stars({ rating }: { rating: number }) {
 /* ─────────────────────────────────────────────
    Single Product Card
 ───────────────────────────────────────────── */
-function ProductCard({ item, catStyle }: { item: any; catStyle: any }) {
+function ProductCard({ item, catStyle, onItemClick }: { item: any; catStyle: any; onItemClick: (item: any) => void }) {
+  const [isAdded, setIsAdded] = useState(false);
+  const { addToCart } = useCart();
+
+  const handleCartClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    addToCart(item);
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 1500);
+  };
+
   return (
-    <div className="ps-card" style={catStyle as any}>
+    <div className="ps-card" style={catStyle as any} onClick={() => onItemClick(item)} role="button" tabIndex={0}>
       <div className="ps-img-wrap">
         <img
           src={item.img}
@@ -248,7 +260,11 @@ function ProductCard({ item, catStyle }: { item: any; catStyle: any }) {
         <Stars rating={item.rating} />
         <div className="ps-card-footer">
           <span className="ps-card-price">{item.price}</span>
-          <button className="ps-card-btn" title="Add to cart">
+          <button 
+            className={`ps-card-btn ${isAdded ? 'added' : ''}`}
+            title="Add to cart"
+            onClick={handleCartClick}
+          >
             <MdAddShoppingCart size={14} />
           </button>
         </div>
@@ -260,7 +276,7 @@ function ProductCard({ item, catStyle }: { item: any; catStyle: any }) {
 /* ─────────────────────────────────────────────
    Single Category Section (drag-to-scroll)
 ───────────────────────────────────────────── */
-function CategorySection({ section }: { section: any }) {
+function CategorySection({ section, onItemClick }: { section: any; onItemClick: (item: any) => void }) {
   const meta    = CATEGORY_META[section.category as keyof typeof CATEGORY_META]
   const Icon    = meta.icon
   const trackRef = useRef<HTMLDivElement>(null)
@@ -338,7 +354,7 @@ function CategorySection({ section }: { section: any }) {
           onMouseMove={onMouseMove}
         >
           {section.items.map((item: any) => (
-            <ProductCard key={item.id} item={item} catStyle={meta.style} />
+            <ProductCard key={item.id} item={{ ...item, category: section.category }} catStyle={meta.style} onItemClick={onItemClick} />
           ))}
         </div>
       </div>
@@ -350,11 +366,54 @@ function CategorySection({ section }: { section: any }) {
    Main Export
 ───────────────────────────────────────────── */
 export default function ProductSections() {
+  const [selectedItem, setSelectedItem] = useState<ModalItem | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { addToCart } = useCart();
+
+  const handleItemClick = (item: any) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => setSelectedItem(null), 300);
+  };
+
+  const handleAddToCart = (item: ModalItem) => {
+    addToCart(item);
+    handleCloseModal();
+  };
+
+  const handleOrder = (item: ModalItem) => {
+    console.log('Order placed:', item);
+    // TODO: Implement order functionality
+  };
+
+  // Get similar items based on category
+  const getSimilarItems = (item: ModalItem): ModalItem[] => {
+    const currentSection = SECTIONS.find(s => s.category === item.category);
+    if (!currentSection) return [];
+    return currentSection.items
+      .filter((i: any) => i.id !== item.id)
+      .slice(0, 4);
+  };
+
   return (
-    <div className="product-sections">
-      {SECTIONS.map(section => (
-        <CategorySection key={section.category} section={section} />
-      ))}
-    </div>
+    <>
+      <div className="product-sections">
+        {SECTIONS.map(section => (
+          <CategorySection key={section.category} section={section} onItemClick={handleItemClick} />
+        ))}
+      </div>
+      <ItemDetailModal
+        isOpen={isModalOpen}
+        item={selectedItem}
+        onClose={handleCloseModal}
+        similarItems={selectedItem ? getSimilarItems(selectedItem) : []}
+        onAddToCart={handleAddToCart}
+        onOrder={handleOrder}
+      />
+    </>
   )
 }

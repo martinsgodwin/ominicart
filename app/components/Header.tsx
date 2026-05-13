@@ -3,10 +3,13 @@
 import { Search, User, Info, Home, Mail, ShoppingCart, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
+import { useCart } from '@/context/CartContext'
 import './Header.css'
 
 export default function Header() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { cartItems } = useCart()
   
   const navLinks = [
     { name: 'About', href: '/about', icon: Info },
@@ -66,9 +69,14 @@ export default function Header() {
             />
             <Search size={20} className="search-icon" />
           </div>
-          <button className="cart-btn" title="My Cart list">
-            <ShoppingCart size={24} />
-          </button>
+          <Link href="/cart">
+            <button 
+              className={`cart-btn ${cartItems.length > 0 ? 'active' : ''}`}
+              title="My Cart list"
+            >
+              <ShoppingCart size={24} />
+            </button>
+          </Link>
           <button className="profile-btn" title="My Profile">
             <User size={24} />
           </button>

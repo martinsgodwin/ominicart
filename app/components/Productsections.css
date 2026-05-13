@@ -290,20 +290,26 @@
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: var(--cat-gradient);
+  background: white;
   border: none;
-  color: white;
+  color: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 2px 8px var(--cat-shadow);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .ps-card-btn:hover {
   transform: scale(1.12);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.ps-card-btn.added {
+  background: var(--cat-gradient);
+  color: white;
   box-shadow: 0 4px 14px var(--cat-shadow);
 }
 
