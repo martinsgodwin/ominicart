@@ -196,6 +196,8 @@
   text-decoration: none;
   display: flex;
   flex-direction: column;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .ps-card:hover {

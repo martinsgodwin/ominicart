@@ -116,7 +116,7 @@ export default function CategoryStrip() {
 
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (trackRef.current) {
-      drag.current = { down: true, startX: e.pageX - trackRef.current.offsetLeft, scrollLeft: trackRef.current.scrollLeft }
+      drag.current = { down: true, startX: e.pageX - trackRef.current.offsetLeft, scrollLeft: trackRef.current.scrollLeft, moved: false }
     }
   }
   const onMouseLeave = () => { drag.current.down = false }
@@ -124,10 +124,13 @@ export default function CategoryStrip() {
   const onMouseMove  = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!drag.current.down) return
     if (trackRef.current) {
-      e.preventDefault()
       const x    = e.pageX - trackRef.current.offsetLeft
       const walk = (x - drag.current.startX) * 1.4
-      trackRef.current.scrollLeft = drag.current.scrollLeft - walk
+      if (Math.abs(walk) > 5) {
+        drag.current.moved = true
+        e.preventDefault()
+        trackRef.current.scrollLeft = drag.current.scrollLeft - walk
+      }
     }
   }
 
@@ -189,7 +192,13 @@ export default function CategoryStrip() {
                 href={`/category/${cat.name.toLowerCase().replace(/\s+/g, '-')}`}
                 className={`cat-card ${active === cat.name ? 'selected' : ''}`}
                 style={cat.style as any}
-                onClick={() => setActive(cat.name)}
+                onClick={(e) => {
+                  if (drag.current.moved) {
+                    e.preventDefault();
+                  } else {
+                    setActive(cat.name);
+                  }
+                }}
                 draggable={false}
               >
                 <div className="cat-card-bg" />

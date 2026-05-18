@@ -232,9 +232,8 @@ function Stars({ rating }: { rating: number }) {
 /* ─────────────────────────────────────────────
    Single Product Card
 ───────────────────────────────────────────── */
-function ProductCard({ item, catStyle, onItemClick }: { item: any; catStyle: any; onItemClick: (item: any) => void }) {
+function ProductCard({ item, catStyle, onItemClick, dragRef }: { item: any; catStyle: any; onItemClick: (item: any) => void; dragRef: React.MutableRefObject<any> }) {
   const { addToCart, removeFromCart, cartItems } = useCart();
-
   const isInCart = cartItems.some(cartItem => cartItem.id === item.id);
 
   const handleCartClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -254,8 +253,14 @@ function ProductCard({ item, catStyle, onItemClick }: { item: any; catStyle: any
     }
   };
 
+  const handleClick = () => {
+    if (!dragRef.current.moved) {
+      onItemClick(item);
+    }
+  };
+
   return (
-    <div className="ps-card" style={catStyle as any} onClick={() => onItemClick(item)} role="button" tabIndex={0}>
+    <div className="ps-card" style={catStyle as any} onClick={handleClick} role="button" tabIndex={0}>
       <div className="ps-img-wrap">
         <img
           src={item.img}
@@ -296,7 +301,7 @@ function CategorySection({ section, onItemClick }: { section: any; onItemClick: 
 
   const onMouseDown  = (e: React.MouseEvent<HTMLDivElement>) => { 
     if (trackRef.current) {
-      drag.current = { down: true, startX: e.pageX - trackRef.current.offsetLeft, scrollLeft: trackRef.current.scrollLeft } 
+      drag.current = { down: true, startX: e.pageX - trackRef.current.offsetLeft, scrollLeft: trackRef.current.scrollLeft, moved: false } 
     }
   }
   const onMouseLeave = ()  => { drag.current.down = false }
@@ -304,9 +309,13 @@ function CategorySection({ section, onItemClick }: { section: any; onItemClick: 
   const onMouseMove  = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!drag.current.down) return
     if (trackRef.current) {
-      e.preventDefault()
       const x = e.pageX - trackRef.current.offsetLeft
-      trackRef.current.scrollLeft = drag.current.scrollLeft - (x - drag.current.startX) * 1.4
+      const walk = (x - drag.current.startX) * 1.4
+      if (Math.abs(walk) > 5) {
+        drag.current.moved = true
+        e.preventDefault()
+        trackRef.current.scrollLeft = drag.current.scrollLeft - walk
+      }
     }
   }
 
@@ -366,7 +375,7 @@ function CategorySection({ section, onItemClick }: { section: any; onItemClick: 
           onMouseMove={onMouseMove}
         >
           {section.items.map((item: any) => (
-            <ProductCard key={item.id} item={{ ...item, category: section.category }} catStyle={meta.style} onItemClick={onItemClick} />
+            <ProductCard key={item.id} item={{ ...item, category: section.category }} catStyle={meta.style} onItemClick={onItemClick} dragRef={drag} />
           ))}
         </div>
       </div>

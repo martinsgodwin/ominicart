@@ -237,19 +237,17 @@
 
 /* Mobile Sidebar Backdrop */
 .sidebar-backdrop {
-  display: none;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 98;
+  z-index: 1001; /* Higher than header */
 }
 
 /* Mobile Sidebar */
 .mobile-sidebar {
-  display: none;
   position: fixed;
   top: 0;
   right: 0;
@@ -257,7 +255,8 @@
   width: 280px;
   background: linear-gradient(180deg, #1e3a8a 0%, #a855f7 100%);
   box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
-  z-index: 99;
+  z-index: 1002; /* Higher than backdrop */
+  display: flex;
   flex-direction: column;
   overflow-y: auto;
 }
@@ -294,16 +293,6 @@
 
 .sidebar-icon {
   flex-shrink: 0;
-}
-
-@media (max-width: 768px) {
-  .sidebar-backdrop {
-    display: block;
-  }
-
-  .mobile-sidebar {
-    display: flex;
-  }
 }
 
 @media (max-width: 768px) {
@@ -365,14 +354,6 @@
 
   .logo-text {
     font-size: 1.2rem;
-  }
-
-  .sidebar-backdrop {
-    display: block;
-  }
-
-  .mobile-sidebar {
-    display: flex;
   }
 }
 
