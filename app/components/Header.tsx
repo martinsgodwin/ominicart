@@ -85,7 +85,6 @@ export default function Header() {
           <button 
             className="menu-toggle" 
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            onTouchEnd={() => setSidebarOpen(!sidebarOpen)}
           >
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -102,7 +101,6 @@ export default function Header() {
                 animate="visible"
                 exit="exit"
                 onClick={() => setSidebarOpen(false)}
-                onTouchEnd={() => setSidebarOpen(false)}
               />
 
               <motion.nav 
@@ -124,7 +122,6 @@ export default function Header() {
                       href={link.href} 
                       className="sidebar-link"
                       onClick={() => setSidebarOpen(false)}
-                      onTouchEnd={() => setSidebarOpen(false)}
                     >
                       <IconComponent size={20} className="sidebar-icon" />
                       <span>{link.name}</span>
