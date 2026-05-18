@@ -112,7 +112,7 @@ export default function CategoryStrip() {
   const [active, setActive] = useState<string | null>(null)
 
   // ── Drag to scroll ──
-  const drag = useRef({ down: false, startX: 0, scrollLeft: 0 })
+  const drag = useRef({ down: false, startX: 0, scrollLeft: 0, moved: false })
 
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (trackRef.current) {
