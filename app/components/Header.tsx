@@ -41,10 +41,10 @@ export default function Header() {
     <header className="header">
       <div className="header-content">
         {/* Logo */}
-        <div className="logo">
+        <Link href="/" className="logo">
           <div className="logo-box">O</div>
           <span className="logo-text">OminiCart</span>
-        </div>
+        </Link>
 
         {/* Navigation */}
         <nav className="nav-center">
@@ -82,7 +82,11 @@ export default function Header() {
           </button>
           
           {/* Menu Toggle */}
-          <button className="menu-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
+          <button 
+            className="menu-toggle" 
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            onTouchEnd={() => setSidebarOpen(!sidebarOpen)}
+          >
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -98,6 +102,7 @@ export default function Header() {
                 animate="visible"
                 exit="exit"
                 onClick={() => setSidebarOpen(false)}
+                onTouchEnd={() => setSidebarOpen(false)}
               />
 
               <motion.nav 
@@ -119,6 +124,7 @@ export default function Header() {
                       href={link.href} 
                       className="sidebar-link"
                       onClick={() => setSidebarOpen(false)}
+                      onTouchEnd={() => setSidebarOpen(false)}
                     >
                       <IconComponent size={20} className="sidebar-icon" />
                       <span>{link.name}</span>

@@ -31,7 +31,7 @@ function ProductCard({ product, onItemClick }: { product: Product; onItemClick: 
 
   const isInCart = cartItems.some(cartItem => cartItem.id === product.id);
 
-  const handleCartClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleCartClick = (e: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     if (isInCart) {
       removeFromCart(product.id);
@@ -58,7 +58,7 @@ function ProductCard({ product, onItemClick }: { product: Product; onItemClick: 
   };
 
   return (
-    <div className="ps-card" onClick={() => onItemClick(product)} role="button" tabIndex={0}>
+    <div className="ps-card" onClick={() => onItemClick(product)} onTouchEnd={() => onItemClick(product)} role="button" tabIndex={0}>
       {/* Image wrapper */}
       <div className="ps-img-wrap">
         <img
@@ -86,6 +86,7 @@ function ProductCard({ product, onItemClick }: { product: Product; onItemClick: 
             className={`ps-card-btn ${isInCart ? 'added' : ''}`}
             title={isInCart ? "Remove from cart" : "Add to cart"}
             onClick={handleCartClick}
+            onTouchEnd={handleCartClick}
           >
             <MdAddShoppingCart size={14} />
           </button>

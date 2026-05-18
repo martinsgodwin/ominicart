@@ -23,6 +23,13 @@
   align-items: center;
   gap: 0.25rem;
   flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  text-decoration: none;
+}
+
+.logo:hover {
+  transform: scale(1.05);
 }
 
 .logo-box {
@@ -157,6 +164,8 @@
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .profile-btn:hover {
@@ -179,6 +188,8 @@
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .cart-btn:hover {
@@ -214,6 +225,8 @@
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .menu-toggle:hover {

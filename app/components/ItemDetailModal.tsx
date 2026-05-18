@@ -79,6 +79,12 @@ export default function ItemDetailModal({
     }
   };
 
+  const handleBackdropTouch = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   const isInCart = item ? cartItems.some(cartItem => cartItem.id === item.id) : false;
 
   const handleAddToCart = () => {
@@ -97,12 +103,14 @@ export default function ItemDetailModal({
     <div
       className={`modal-backdrop ${isAnimating ? 'active' : ''}`}
       onClick={handleBackdropClick}
+      onTouchEnd={handleBackdropTouch}
     >
       <div className={`modal-container ${isAnimating ? 'slide-up' : ''}`}>
         {/* Close Button */}
         <button
           className="modal-close-btn"
           onClick={onClose}
+          onTouchEnd={onClose}
           aria-label="Close modal"
         >
           <MdClose size={24} />
@@ -180,6 +188,7 @@ export default function ItemDetailModal({
               <button
                 className={`modal-btn modal-btn-cart ${isInCart ? 'remove' : 'add'}`}
                 onClick={handleAddToCart}
+                onTouchEnd={handleAddToCart}
               >
                 {isInCart ? (
                   <>
@@ -196,6 +205,7 @@ export default function ItemDetailModal({
               <button
                 className="modal-btn modal-btn-order"
                 onClick={handleOrder}
+                onTouchEnd={handleOrder}
               >
                 <MdShoppingBag size={18} />
                 <span>Order Now</span>

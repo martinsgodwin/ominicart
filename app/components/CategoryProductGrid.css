@@ -68,6 +68,8 @@
   text-decoration: none;
   display: flex;
   flex-direction: column;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .ps-card:hover {
@@ -203,6 +205,8 @@
   flex-shrink: 0;
   transition: all 0.3s ease;
   box-shadow: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .ps-card-btn:hover {
